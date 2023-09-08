@@ -77,46 +77,66 @@ export default {
 						});
 					}
 					default:
-						// return new Response('Not found', { status: 404 });
-						// For any other path, reverse proxy to 'www.fmprc.gov.cn' and return the original response, caching it in the process
-						const hostnames = ['www.fmprc.gov.cn', 'www.xuexi.cn', 'www.gov.cn', 'mail.gov.cn', 'www.mofcom.gov.cn', 'www.gfbzb.gov.cn', 'www.miit.gov.cn', 'www.12377.cn'];
-						url.hostname = hostnames[Math.floor(Math.random() * hostnames.length)];
-						url.protocol = 'https:';
 
-						const newHeaders = new Headers(request.headers);
-						newHeaders.set('cf-connecting-ip', newHeaders.get('x-forwarded-for') || newHeaders.get('cf-connecting-ip'));
-						newHeaders.set('x-forwarded-for', newHeaders.get('cf-connecting-ip'));
-						newHeaders.set('x-real-ip', newHeaders.get('cf-connecting-ip'));
-						newHeaders.set('referer', 'https://www.google.com/q=edtunnel');
+						const HTMLResponse = `
+                                                <!DOCTYPE html>
+                                                <html>
+                                                <head>
+                                                  <title>Vless-CF by Peekaboo</title>
+                                                </head>
+                                                <body>
+                                                  <h1>This is the default page!</h1>
+                                                  <p>Just add UUID after domain with slash.</p>
+                                                </body>
+                                                </html>
+                                                `;
+                                      
+                                                return new Response(HTMLResponse, {
+                                                  status: 200,
+                                                  headers: {
+                                                    "Content-Type": "text/html;charset=utf-8",
+                                                  },
+                                                });
 
-						request = new Request(url, {
-							method: request.method,
-							headers: newHeaders,
-							body: request.body,
-							redirect: request.redirect,
-						});
+						
+						//const hostnames = ['www.fmprc.gov.cn', 'www.xuexi.cn', 'www.gov.cn', 'mail.gov.cn', 'www.mofcom.gov.cn', 'www.gfbzb.gov.cn', 'www.miit.gov.cn', 'www.12377.cn'];
+						//url.hostname = hostnames[Math.floor(Math.random() * hostnames.length)];
+						//url.protocol = 'https:';
 
-						const cache = caches.default;
-						let response = await cache.match(request);
+						//const newHeaders = new Headers(request.headers);
+						//newHeaders.set('cf-connecting-ip', newHeaders.get('x-forwarded-for') || newHeaders.get('cf-connecting-ip'));
+						//newHeaders.set('x-forwarded-for', newHeaders.get('cf-connecting-ip'));
+						//newHeaders.set('x-real-ip', newHeaders.get('cf-connecting-ip'));
+						//newHeaders.set('referer', 'https://www.google.com/q=edtunnel');
 
-						if (!response) {
-							try {
-								response = await fetch(request, { redirect: 'manual' });
-							} catch (err) {
-								url.protocol = 'http:';
-								url.hostname = hostnames[Math.floor(Math.random() * hostnames.length)];
-								request = new Request(url, {
-									method: request.method,
-									headers: newHeaders,
-									body: request.body,
-									redirect: request.redirect,
-								});
-								response = await fetch(request, { redirect: 'manual' });
-							}
+						//request = new Request(url, {
+					                //method: request.method,
+							//headers: newHeaders,
+							//body: request.body,
+							//redirect: request.redirect,
+						//});
 
-							const cloneResponse = response.clone();
-							ctx.waitUntil(cache.put(request, cloneResponse));
-						}
+						//const cache = caches.default;
+						//let response = await cache.match(request);
+
+						//if (!response) {
+							//try {
+								//response = await fetch(request, { redirect: 'manual' });
+							//} catch (err) {
+								//url.protocol = 'http:';
+								//url.hostname = hostnames[Math.floor(Math.random() * hostnames.length)];
+								//request = new Request(url, {
+									//method: request.method,
+									//headers: newHeaders,
+									//body: request.body,
+									//redirect: request.redirect,
+								//});
+								//response = await fetch(request, { redirect: 'manual' });
+							//}
+
+							//const cloneResponse = response.clone();
+							//ctx.waitUntil(cache.put(request, cloneResponse));
+						//}
 						return response;
 				}
 			} else {
